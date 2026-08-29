@@ -1,29 +1,26 @@
-# AI Healthcare Compliance — Final Year Project (PFE)
+# AI Healthcare Compliance — PFE
 
-aivancity PGE5 (AI & Data Science) Final Project Report by **Remi Uttejitha Allam**.
+aivancity PGE5 Final Year Project by **Remi Uttejitha Allam**.
 
 **Title:** A Literature Review and Interactive Dashboard on AI for Healthcare Compliance and Regulations across Countries
 
-- Academic tutor: Prof. Anuradha Kar (aivancity)
-- Academic year: 2025–2026
-- Submission date: 30/08/2026
+## Contents
 
-## Report
+- [`PFE.pdf`](PFE.pdf) — final project report
+- [`dashboard/`](dashboard/) — Streamlit + React dashboard and dataset
 
-- Deliverable PDF: [`PFE.pdf`](PFE.pdf)
-- LaTeX sources: [`PFE_Draft/`](PFE_Draft/)
-
-Compile from `PFE_Draft/`:
+## Run the dashboard
 
 ```bash
-pdflatex main.tex
-biber main
-pdflatex main.tex
-pdflatex main.tex
+cd dashboard
+pip install -r requirements.txt
+streamlit run app.py
 ```
 
-## Dashboard
+React UI:
 
-Interactive Streamlit / React dashboard and dataset:
-
-https://github.com/remi7025/AI-Healthcare-Compliance-Dashboard
+```bash
+cd dashboard/web
+npm install
+npm run dev
+```

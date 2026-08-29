@@ -1,45 +1,24 @@
-# LaTeX build artifacts
-*.aux
-*.log
-*.out
-*.toc
-*.lof
-*.lot
-*.bbl
-*.blg
-*.bcf
-*.run.xml
-*.synctex.gz
-*.fdb_latexmk
-*.fls
-*.idx
-*.ilg
-*.ind
-*.nav
-*.snm
-*.vrb
-
 # Python
 __pycache__/
 *.py[cod]
-.pytest_cache/
+.venv/
+venv/
+.env
 
 # Node
 node_modules/
 dist/
 .vite/
+*.tsbuildinfo
 
-# OS / editor
+# OS
 .DS_Store
 Thumbs.db
-*.swp
-.vscode/
-.idea/
+~$*
 
-# Nested dashboard git (dashboard already lives on GitHub)
-AI Clinic/.git/
-
-# Duplicate compiled PDF (canonical copy is /PFE.pdf)
-PFE_Draft/main.pdf
-PFE_Draft/*.bbl
-PFE_Draft/*.blg
+# Local LaTeX build clutter (report is PFE.pdf only)
+PFE_Draft/
+*.aux
+*.log
+*.out
+*.toc
