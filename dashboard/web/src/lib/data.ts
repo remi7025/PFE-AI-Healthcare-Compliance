@@ -2,13 +2,13 @@ import type { ComplianceDataset, CountryRecord, CountryRow, ThemeKey } from "../
 import { ISO3_MAP } from "../constants";
 
 export async function loadDataset(): Promise<ComplianceDataset> {
-  const res = await fetch("/data/compliance_dataset.json");
+  const res = await fetch(`${import.meta.env.BASE_URL}data/compliance_dataset.json`);
   if (!res.ok) throw new Error("Failed to load compliance dataset");
   return res.json();
 }
 
 export async function loadLiteratureReview(): Promise<string> {
-  const res = await fetch("/literature_review.md");
+  const res = await fetch(`${import.meta.env.BASE_URL}literature_review.md`);
   if (!res.ok) throw new Error("Failed to load literature review");
   return res.text();
 }
