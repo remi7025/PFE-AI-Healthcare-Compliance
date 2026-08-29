@@ -1,0 +1,190 @@
+\section{Technical Implementation of the RAG Module}
+\label{sec:rag}
+
+This section explains the Retrieval-Augmented Generation (RAG) module in a clear,
+defence-ready way: what problem it solves, how it works in four short steps, and how
+it connects to the dashboard~\cite{lewis2020rag}.
+
+\subsection{What RAG Is (and Why We Use It)}
+\label{sec:rag-why}
+
+A normal chatbot answers from its training memory. That is risky for regulation:
+it can invent article numbers, miss new laws, and give answers without sources.
+
+RAG works differently:
+\begin{enumerate}[noitemsep]
+  \item the user asks a question;
+  \item the system \textbf{retrieves} relevant passages from our curated corpus;
+  \item the system \textbf{answers only from those passages};
+  \item every answer shows \textbf{citations}.
+\end{enumerate}
+
+In one sentence: \emph{retrieve first, then generate}. This reduces hallucination and
+keeps the student accountable for every claim~\cite{lewis2020rag,karpukhin2020}.
+
+\subsection{Brief RAG Architecture}
+\label{sec:rag-arch}
+
+Figure~\ref{fig:rag-arch} shows the architecture in four blocks only.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=aivNavy, line width=0.8pt, rounded corners=2pt,
+              align=center, font=\small\bfseries, fill=aivBox,
+              minimum width=10.6cm, minimum height=0.85cm, inner sep=4pt},
+  arr/.style={-{Latex}, thick, aivNavy}]
+  \node[box] (a) {1.~Corpus (laws, guidance, literature, country JSON)};
+  \node[box, below=0.35cm of a] (b) {2.~Retrieve top-$k$ passages (BM25 + optional dense search)};
+  \node[box, below=0.35cm of b] (c) {3.~Grounded answer (only from retrieved text + citations)};
+  \node[box, below=0.35cm of c] (d) {4.~Dashboard output (RAG Assistant page / evidence cards)};
+  \draw[arr] (a) -- (b);
+  \draw[arr] (b) -- (c);
+  \draw[arr] (c) -- (d);
+\end{tikzpicture}
+\caption{Brief RAG architecture used in this project (four steps). Source: author.}
+\label{fig:rag-arch}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{RAG pipeline in one view}
+\label{tab:rag-brief}
+\begin{tabular}{@{}clp{8.2cm}@{}}
+\toprule
+\textbf{Step} & \textbf{Name} & \textbf{What happens} \\
+\midrule
+1 & Corpus & Store public regulatory texts and curated country narratives as short chunks \\
+2 & Retrieve & Rank the most relevant chunks for the user question \\
+3 & Generate & Write an answer using only those chunks; add citations \\
+4 & Display & Show answer + sources in the React RAG Assistant \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Formally, for question $q$ and corpus chunks $\mathcal{D}$:
+\begin{equation}
+\label{eq:rag}
+\hat{y}=g\bigl(q,\operatorname{TopK}(q,\mathcal{D})\bigr),
+\end{equation}
+where $\operatorname{TopK}$ returns the best passages and $g$ produces a grounded answer
+with citations. No answer is accepted without retrieved evidence.
+
+\subsection{Corpus and Chunking (Step 1)}
+\label{sec:rag-corpus}
+
+\textbf{Inputs.}
+Agency documents (FDA, EU AI Act, MDR/IVDR, WHO), peer-reviewed papers, country
+narratives in \texttt{compliance\_dataset.json}, and the literature-review markdown.
+
+\textbf{Chunking.}
+Long documents are split into short passages (about 350 tokens, overlap 80) so retrieval
+can find the exact paragraph. Each chunk keeps simple metadata: source, jurisdiction,
+theme tag, and text.
+
+\subsection{Retrieval (Step 2)}
+\label{sec:rag-retrieve}
+
+Retrieval finds the best passages for the question:
+\begin{itemize}[noitemsep]
+  \item \textbf{BM25 (sparse):} good for exact legal terms (e.g.\ ``Article 10'', ``510(k)'');
+  \item \textbf{Dense search (optional):} good for similar meaning even if words differ;
+  \item \textbf{Hybrid:} combine both (weight $\alpha\approx 0.6$ dense / $0.4$ BM25)~\cite{robertson2009,karpukhin2020}.
+\end{itemize}
+
+The dashboard MVP uses an offline lexical retriever over the same corpus interface, so
+the defence demo runs without a GPU or paid API. Top-$k$ is typically 6--8 passages.
+Optional filters: jurisdiction and compliance theme.
+
+\subsection{Grounded Generation and Citations (Step 3)}
+\label{sec:rag-prompt}
+
+The generator must:
+\begin{itemize}[noitemsep]
+  \item use \emph{only} retrieved passages;
+  \item cite chunk identifiers;
+  \item say ``insufficient evidence'' when the corpus is not enough;
+  \item never invent statute numbers or device counts;
+  \item remind the user that output is \textbf{not legal advice}.
+\end{itemize}
+
+\begin{lstlisting}[caption={Short grounded prompt used by the RAG module},label={lst:prompt}]
+Use ONLY the CONTEXT passages. Cite [chunk_id].
+If CONTEXT is insufficient, say "Insufficient evidence".
+Do not provide legal advice.
+CONTEXT: [1] ... [2] ...
+QUESTION: ...
+\end{lstlisting}
+
+\subsection{Dashboard Output and HITL (Step 4)}
+\label{sec:rag-api}
+
+The React \textbf{RAG Assistant} page shows:
+\begin{enumerate}[noitemsep]
+  \item the grounded answer;
+  \item ranked passages with scores;
+  \item links to Country Detail for follow-up.
+\end{enumerate}
+
+RAG can suggest evidence for theme scores, but \textbf{humans confirm} any score change
+(HITL). Flow:
+\[
+\text{Sources}\rightarrow\text{Retrieve}\rightarrow\text{Answer + citations}
+\rightarrow\text{HITL}\rightarrow\text{JSON / Dashboard}.
+\]
+
+\subsection{Simple Defence Example}
+\label{sec:rag-demo}
+
+\textbf{Question:} Does the EU AI Act add documentation duties beyond GDPR for high-risk
+healthcare AI?
+
+\textbf{Retrieved:} EU AI Act high-risk documentation/logging passages; GDPR health-data
+context; EU country transparency narrative.
+
+\textbf{Answer idea:} Yes---the AI Act adds technical documentation and oversight duties
+on top of GDPR privacy rules; citations point to the retrieved passages.
+
+\textbf{Next click in UI:} Country Detail $\rightarrow$ European Union $\rightarrow$
+transparency / ethics themes.
+
+\subsection{How We Evaluate RAG}
+\label{sec:rag-eval}
+
+\begin{table}[htbp]
+\centering
+\caption{Practical RAG checks for defence}
+\label{tab:rag-eval}
+\begin{tabular}{@{}p{3.4cm}p{8.0cm}@{}}
+\toprule
+\textbf{Check} & \textbf{Meaning} \\
+\midrule
+Relevance & Are the top passages actually about the question? \\
+Groundedness & Is each answer sentence supported by a cited chunk? \\
+Citation accuracy & Do cited IDs really contain the claim? \\
+Abstention & Does the system refuse when evidence is missing? \\
+Safety & No invented article numbers in audited answers \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Baselines compared qualitatively: BM25-only vs hybrid retrieval. Hybrid is preferred
+when questions mix exact legal identifiers and semantic wording.
+
+\subsection{Limits (Honest Boundary)}
+\label{sec:rag-limits}
+
+\begin{itemize}[noitemsep]
+  \item Corpus is mostly English public sources;
+  \item Chunking can split long cross-references (mitigated by overlap);
+  \item Generation can still over-generalize (mitigated by citations + HITL);
+  \item No patient data is indexed---only public regulatory material.
+\end{itemize}
+
+\subsection{Summary}
+\label{sec:rag-summary}
+
+RAG in this project is a short, clear loop: \textbf{corpus $\rightarrow$ retrieve
+$\rightarrow$ grounded answer with citations $\rightarrow$ dashboard}. It is an
+information-retrieval tool for compliance research, not a legal chatbot and not a
+replacement for expert judgment.

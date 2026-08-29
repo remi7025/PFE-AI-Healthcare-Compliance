@@ -1,0 +1,90 @@
+\chapter{Introduction}
+\label{ch:intro}
+
+\section{General Context and Societal Stakes}
+\label{sec:macro}
+
+Healthcare systems worldwide face simultaneous pressures of ageing populations, clinician shortages, rising chronic disease burden, and escalating cost of care. Artificial intelligence (AI) has emerged as a candidate technology to improve diagnostic accuracy, accelerate triage, personalize therapy, and automate administrative workflows~\cite{topol2019,rajpurkar2022}. In imaging alone, AI-enabled Software as a Medical Device (SaMD) products have proliferated: the U.S.\ Food and Drug Administration (FDA) has authorized hundreds of AI/ML-enabled devices, signaling industrial maturity and clinical appetite~\cite{wu2021,fda2021}.
+
+Yet the same properties that make AI powerful---adaptivity, opacity, and dependence on large training corpora---also create novel safety, privacy, fairness, and accountability risks~\cite{gerke2020,char2018}. Unlike a traditional catheter or implant, an adaptive clinical model can drift after deployment as local patient distributions shift. Unlike a deterministic calculator, a deep neural network may resist clinician-facing explanation~\cite{ghassemi2021,rudin2019}. Unlike many consumer applications, healthcare AI frequently processes special-category personal data under stringent legal regimes such as the EU General Data Protection Regulation (GDPR) and the U.S.\ Health Insurance Portability and Accountability Act (HIPAA)~\cite{cohen2018,goodman2017}.
+
+The result is what this project terms \emph{regulatory lag}: technology cycles outpace legislative cycles, producing a multi-jurisdictional ``maze'' of overlapping medical-device, data-protection, AI-specific, and ethical frameworks. For developers seeking multi-market access, for hospitals evaluating procurement risk, and for policymakers seeking evidence-based comparative learning, the absence of a structured, explorable synthesis is itself a barrier to safe innovation.
+
+\section{Micro Context and Project Motivation}
+\label{sec:micro}
+
+The present work addresses comparative AI healthcare compliance through two complementary deliverables:
+
+\begin{enumerate}[noitemsep]
+  \item a thematic, multi-region literature and policy synthesis organized around seven compliance dimensions;
+  \item an interactive analytics dashboard that transforms curated jurisdictional indicators into maps, comparisons, trend views, and clinical use-case readiness profiles, released openly at \repoLink{}.
+\end{enumerate}
+
+The Phase~1 proposal framed the problem as regulatory fragmentation, safety/ethics obligations for dynamic systems, and market-entry barriers created by tightening 2025--2026 documentation and governance standards. It further argued that Natural Language Processing (NLP) and human-in-the-loop (HITL) workflows can reduce rote scanning of legislative corpora. The implemented draft focuses first on high-quality curated comparative analytics and interactive visualization, while specifying a reproducible NLP-assisted ingestion pipeline as the methodological backbone for future automation.
+
+\section{Problem Statement}
+\label{sec:problem}
+
+The central research and operational question of this PFE is:
+
+\begin{quote}
+\textit{How can multi-jurisdictional AI healthcare regulatory requirements be systematically synthesized, scored, and interactively compared so that researchers and decision-makers can identify maturity gaps, convergence trends, and deployment constraints across countries?}
+\end{quote}
+
+This question decomposes into four concrete challenges:
+\begin{itemize}[noitemsep]
+  \item \textbf{Knowledge fragmentation:} peer-reviewed studies, agency guidance, and national AI strategies are dispersed across databases and languages;
+  \item \textbf{Incommensurable frameworks:} FDA Class~I--III, EU MDR classes, and NMPA tiers are related but not identical;
+  \item \textbf{Static reporting:} traditional literature reviews freeze knowledge at publication time and do not support drill-down exploration;
+  \item \textbf{Stakeholder diversity:} policymakers, developers, clinicians, and researchers need different views of the same underlying evidence.
+\end{itemize}
+
+\section{SMART Objectives and Contributions}
+\label{sec:objectives}
+
+The project pursues the following SMART objectives:
+
+\begin{enumerate}[noitemsep]
+  \item \textbf{Specific:} synthesize AI healthcare regulation across twenty countries/regions spanning six geographic areas;
+  \item \textbf{Measurable:} define and score seven compliance themes on a calibrated 1--10 scale and report device-approval counts where available;
+  \item \textbf{Achievable:} deliver a version-controlled JSON dataset and interactive dashboard runnable locally without proprietary APIs;
+  \item \textbf{Relevant:} address an industry-critical need for comparative compliance intelligence under EU AI Act and related regimes;
+  \item \textbf{Time-bound:} produce Phase~1 framing, literature/dataset/dashboard drafts, and this full report on the planned project schedule.
+\end{enumerate}
+
+\textbf{Scientific and technical contributions} claimed by this work:
+\begin{itemize}[noitemsep]
+  \item a thematic state-of-the-art that organizes regulatory literature by problem strand rather than paper-by-paper summary;
+  \item an explicit seven-theme scoring ontology linking privacy, validation, approval, transparency, ethics, post-market, and liability;
+  \item a defence-oriented RAG module with hybrid retrieval, grounded generation, and citation policy;
+  \item a reproducible dashboard architecture (Streamlit prototype and React presentation layer) with exportable tables and a RAG Assistant page;
+  \item critical positioning against gaps in gold-standard cross-jurisdictional compliance repositories.
+\end{itemize}
+
+\section{Scope, Assumptions, and Non-Goals}
+\label{sec:scope}
+
+The analysis covers twenty jurisdictions selected for regional diversity and data availability (United States, Canada, European Union aggregate, United Kingdom, Germany, Switzerland, China, India, Japan, South Korea, Singapore, Thailand, Saudi Arabia, UAE, Israel, South Africa, Nigeria, Kenya, Australia, and Brazil). Theme scores are expert-curated comparative indicators informed by policy documents and literature; they are \emph{not} official government ratings and must not be interpreted as legal advice.
+
+Out of scope for the present draft: live scraping of every national gazette; clinical validation of a therapeutic AI model; production deployment inside a hospital EHR; and binding legal opinions. NLP classification is designed and partially prototyped as a pipeline, with full supervised training treated as future work when labeled corpora mature.
+
+\section{Report Outline}
+\label{sec:outline}
+
+Chapter~\ref{ch:sota} presents the state of the art on SaMD frameworks, privacy, validation, transparency, ethics, surveillance, and liability. Chapter~\ref{ch:context} situates the mission and constraints. Chapter~\ref{ch:method} details the reproducible methodology, including AI techniques and the full RAG technical module (input $\rightarrow$ processing $\rightarrow$ RAG $\rightarrow$ dashboard). Chapter~\ref{ch:results} reports quantitative and qualitative findings. Chapter~\ref{ch:conclusion} answers the research question and proposes future work. Appendices provide code extracts, environment details, the generative-AI declaration, and extended country profiles.
+
+
+\section{Stakeholder Needs Analysis}
+\label{sec:stakeholders}
+
+Four primary stakeholder groups motivate the dashboard design. \textbf{Researchers} need citable thematic synthesis and exportable tables. \textbf{Policymakers} need rapid gap identification across peer jurisdictions. \textbf{Medtech/AI developers} need early visibility into documentation and evidence expectations before market sequencing. \textbf{Hospital compliance and clinical-informatics teams} need an interactive artifact that makes comparative governance tangible. Each group implies different default views: literature-first, heatmap-first, radar comparison-first, and guided tour-first, respectively. The implemented interface exposes all four without forcing a single narrative path.
+
+\section{Project Success Criteria}
+\label{sec:success}
+
+Project-level success is defined as: (i) complete theme vectors for all selected jurisdictions; (ii) a runnable local demo from a clean environment; (iii) a bibliography grounded in peer-reviewed and primary regulatory sources; (iv) an explicit positioning statement against related work; and (v) clear legal caveats that comparative scores are research instruments, not legal advice.
+
+\section{Key Takeaways}
+\label{sec:jurybox}
+
+Readers short on time may retain three messages: (1) healthcare AI regulation is converging on risk-based SaMD thinking and GDPR-like privacy, yet diverging on transparency mandates and liability; (2) open comparative scorecards plus interactive analytics make those patterns inspectable; (3) automation should accelerate document triage under human accountability, not replace it. The remainder of the report supplies the evidence, methods, and limitations behind those messages.

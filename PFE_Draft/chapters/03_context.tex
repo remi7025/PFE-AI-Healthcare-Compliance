@@ -1,0 +1,250 @@
+\chapter{Project Context and Scope}
+\label{ch:context}
+
+\section{Independent Research Project Setting}
+\label{sec:setting}
+
+This Final Year Project is an \emph{independent} academic research initiative carried
+out under the scientific direction of Prof.\ Anuradha Kar, within the aivancity
+Grande \'Ecole Programme PGE5 -- AI \& Data Science. The project is not embedded
+within a commercial host company or a corporate product team. Instead, it operates as
+a self-directed applied-research mission, producing open, reproducible scientific
+artifacts: a positioned literature synthesis, a curated multi-jurisdictional compliance
+dataset, an interactive analytics dashboard, and this Final Project Report.
+
+This independent structure has direct methodological consequences. All data sources are
+public---no proprietary clinical or commercial datasets are accessed---and all code,
+schema definitions, and compiled reports are version-controlled for open reproducibility.
+The absence of a commercial host organization is therefore a deliberate feature rather
+than a limitation: it places scientific integrity and reproducibility as the primary
+acceptance criteria.
+
+\section{Scientific Direction and Supervision}
+\label{sec:supervision}
+
+The project is carried out under the sole direction of \textbf{Prof.\ Anuradha Kar},
+who provides scientific oversight, methodological feedback, and critical evaluation of
+the research design. Direction responsibilities include:
+
+\begin{itemize}[noitemsep]
+  \item validating the problem statement and research question formulation;
+  \item reviewing the thematic literature synthesis and scoring ontology design;
+  \item providing feedback on the RAG architecture and dashboard implementation
+        choices;
+  \item evaluating the written report against the aivancity PFE writing guidelines;
+  \item approving the final submission for the oral defence jury.
+\end{itemize}
+
+There is no separate industry or internship supervisor for this project. All
+scientific responsibility and quality governance flow through Prof.\ Anuradha Kar
+and the project author.
+
+\section{Role and Responsibilities of the Author}
+\label{sec:role}
+
+The project author combines the responsibilities of a research analyst, an AI/NLP
+engineer, and a full-stack data-science developer:
+
+\begin{itemize}[noitemsep]
+  \item design the systematic review protocol and the seven-theme coding frame;
+  \item curate 20 jurisdictional compliance profiles and theme scores with
+        documented primary-source justification;
+  \item implement the RAG module (corpus construction, hybrid retrieval, grounded
+        generation, and the React and Streamlit interfaces);
+  \item generate reproducible report artifacts: \LaTeX/PDF compilation, Python figure
+        scripts, literature exports, and dataset versioning;
+  \item maintain the open repository and ensure reproducibility for an independent
+        examiner;
+  \item iterate with Prof.\ Anuradha Kar on scientific positioning and writing quality.
+\end{itemize}
+
+Expected deliverables: Phase~1 topic framing; literature and policy synthesis; curated
+compliance dataset; interactive dashboard (open at \repoLink{}); and this Final
+Project Report.
+
+\section{Mission Scope and Timeline}
+\label{sec:mission}
+
+The project progressed through successive milestones aligned with the programme
+schedule:
+
+\begin{itemize}[noitemsep]
+  \item \textbf{Phase~1:} comparative review framing and dashboard concept;
+  \item \textbf{Phase~2:} state-of-the-art drafting and dataset schema design;
+  \item \textbf{Phase~3:} methodology formalization, dataset curation, and
+        preliminary dashboard release;
+  \item \textbf{Phase~4:} full-draft submission for supervisor review and
+        integration of RAG module;
+  \item \textbf{Phase~5:} final report, figures, code package, and defence
+        preparation.
+\end{itemize}
+
+Throughout all phases, priority was given to a correct, reproducible MVP: open JSON
+as the system of record, interactive comparison views, and a written report auditable
+against primary sources. Fully supervised NLP classification and live legislative
+monitoring were intentionally deferred to the roadmap rather than claimed as finished
+deliverables.
+
+\section{Data Accessed and Information Assets}
+\label{sec:data}
+
+All project data is drawn from publicly accessible regulatory and scientific sources:
+
+\begin{itemize}[noitemsep]
+  \item \textbf{Primary legal instruments:} FDA guidance and 21st Century Cures Act,
+        EU AI Act 2024, EU MDR/IVDR, GDPR, MHRA AI guidance, NMPA and PMDA
+        regulations, WHO ethics guidance~\cite{fda2021,euaiact2024,who2021};
+  \item \textbf{International frameworks:} IMDRF AI/ML SaMD guidance, OECD AI
+        Principles, GMLP;
+  \item \textbf{Peer-reviewed literature:} 80+ references sourced from PubMed,
+        Scopus, IEEE Xplore, and SSRN, covering AI regulation, SaMD compliance,
+        ethics, and clinical validation;
+  \item \textbf{Curated structured records:} \texttt{compliance\_dataset.json}
+        containing 20 country objects with theme scores, narrative fields, legislation
+        lists, and trend cards.
+\end{itemize}
+
+No identifiable patient-level or commercially sensitive data are processed. Data volume
+is modest by machine-learning standards (tens of jurisdictional records rather than
+millions of observations) but high in interpretive density: each country record encodes
+narrative fields that must remain traceable to citations.
+
+\section{Legal, Ethical, and Confidentiality Constraints}
+\label{sec:legal}
+
+\begin{itemize}[noitemsep]
+  \item \textbf{GDPR / privacy:} only public law texts and published literature are
+        processed; no special-category patient data in the current release;
+  \item \textbf{Not legal advice:} compliance scores are comparative research
+        indicators, not legal opinions;
+  \item \textbf{Generative AI:} any AI-assisted drafting is declared in
+        Appendix~\ref{app:genai}; analyses and conclusions remain the author's
+        responsibility;
+  \item \textbf{Conflicts of interest:} none declared; scores are not commissioned
+        by any national regulator or vendor;
+  \item \textbf{Open publication:} the code, dataset, and report cover only
+        public-source analytics and are published openly on GitHub.
+\end{itemize}
+
+\section{Technical and Resource Constraints}
+\label{sec:constraints}
+
+Constraints that shaped design choices include:
+
+\begin{itemize}[noitemsep]
+  \item reliance on publicly documented device counts, which are heterogeneous across
+        agencies and not directly comparable;
+  \item English-dominant source coverage, introducing a potential language bias for
+        non-Anglophone jurisdictions;
+  \item local execution without paid regulatory-intelligence APIs, requiring all
+        retrieval to be offline-capable;
+  \item project timeline bounds that prioritize a robust curated MVP over fully
+        supervised NLP classifiers.
+\end{itemize}
+
+Hardware requirements are laptop-class for both the Streamlit and React applications;
+GPU resources are optional and reserved for future encoder fine-tuning. These
+constraints directly justify: expert-curated scores rather than fully automated
+extraction; versioned JSON rather than a multi-tenant database; and dual Streamlit
+(prototyping) + React (presentation) implementations sharing a single data contract.
+
+\section{Risk Register for the Mission}
+\label{sec:risks}
+
+\begin{table}[htbp]
+\centering
+\caption{Project risk register}
+\label{tab:risks}
+\begin{tabular}{@{}p{3.0cm}p{2.2cm}p{5.8cm}@{}}
+\toprule
+\textbf{Risk} & \textbf{Likelihood} & \textbf{Mitigation} \\
+\midrule
+Source obsolescence & Medium & Dataset \texttt{version}/\texttt{last\_updated} fields;
+  event-driven update cadence \\
+Misinterpretation of law & Medium & Non-legal-advice caveats; HITL score governance \\
+Scope creep into clinical model building & Low & Explicit non-goals in
+  Chapter~\ref{ch:intro} \\
+Citation drift between report and code & Low & Single BibTeX/biblatex configuration
+  shared by all report artifacts \\
+UI maintenance cost & Low & Shared JSON system of record; clean schema versioning \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Budgetary and Organizational Non-Goals}
+\label{sec:nongoals}
+
+The mission does not include paid access to commercial regulatory databases, clinical
+trial sponsorship, or deployment inside a hospital EHR. The operating budget is
+effectively zero beyond personal compute and open-source tooling. The project does not
+replace institutional compliance functions; it produces a research artifact and
+open-source platform that compliance practitioners could subsequently adapt.
+
+\section{Supervision and Acceptance Criteria}
+\label{sec:collab}
+
+Under the direction of Prof.\ Anuradha Kar, the acceptance criteria for the Final
+Project Report are:
+
+\begin{enumerate}[noitemsep]
+  \item a clearly articulated research question with testable scope;
+  \item a thematically organised state of the art (not paper-by-paper enumeration);
+  \item a reproducible scoring protocol with a published rubric and dataset version;
+  \item a functional interactive dashboard launchable from a clean environment;
+  \item critical discussion of construct, internal, and external validity threats;
+  \item alignment with the aivancity PFE mandatory structure and IEEE citation
+        practice.
+\end{enumerate}
+
+\section{Stakeholder Analysis}
+\label{sec:stakeholders-context}
+
+Even in an independent project setting, several stakeholder groups shape requirements:
+
+\begin{table}[htbp]
+\centering
+\caption{Stakeholders and their relationship to the project}
+\label{tab:stakeholders-ctx}
+\begin{tabular}{@{}p{3.0cm}p{3.2cm}p{4.8cm}@{}}
+\toprule
+\textbf{Stakeholder} & \textbf{Role} & \textbf{Implication for the project} \\
+\midrule
+Prof.\ Anuradha Kar & Scientific director & Primary acceptance authority \\
+aivancity jury & Defence evaluators & Structured report + oral defence \\
+Peer researchers & Indirect users & Open-source reproducibility \\
+Policymakers & Intended audience & Dashboard gap-identification views \\
+MedTech developers & Intended audience & Country comparison + use-case readiness \\
+Hospital compliance officers & Intended audience & Narrative drill-down views \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Work Organization and Tools}
+\label{sec:workorg}
+
+The authoring stack combines \LaTeX{} for the report, Python/Streamlit for analytics,
+TypeScript/React for the presentation layer, JSON for the dataset, and Git for version
+control. The working rhythm alternates between (i)~source reading and score curation and
+(ii)~writing, figure regeneration, and dashboard iteration. This mirrors scientific
+software practice: data and narrative stay tightly coupled so that chapter claims
+cannot silently drift from the repository state.
+
+\section{Ethics Review Boundary}
+\label{sec:ethicsboundary}
+
+Because the project analyses public law and published secondary literature rather than
+human-subject data, no clinical ethics-board protocol is required. The remaining ethical
+risk is reputational: comparative scores could be misread as official rankings. Mitigation
+strategies include explicit non-legal-advice caveats throughout the dashboard and report,
+theme-level transparency, and a capacity-building framing in the conclusion that avoids
+``naming and shaming'' interpretations.
+
+\section{Summary of Contextual Constraints}
+\label{sec:contextsummary}
+
+In summary, this independent project operates under public-data inputs, zero cloud
+budget, and a reproducibility mandate under the direction of Prof.\ Anuradha Kar.
+Those constraints justify a curated comparative analytics MVP with an honest NLP
+roadmap---prioritizing correctness and auditability over premature automation.
+Chapter~\ref{ch:method} details the end-to-end architecture, search protocol,
+seven-theme scoring ontology, and evaluation metrics that operationalize these choices.

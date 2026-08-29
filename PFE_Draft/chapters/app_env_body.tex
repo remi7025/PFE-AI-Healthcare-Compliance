@@ -1,0 +1,20 @@
+
+Theme definitions, source lists, and trend objects are stored alongside country records in
+\texttt{compliance\_dataset.json}. Regenerated \LaTeX\ tables and figures used in
+Chapter~\ref{ch:results} live under \texttt{generated/} and \texttt{figures/}.
+Extended country narratives appear in Appendix~\ref{app:profiles}.
+
+\paragraph{Technical environment:}
+Recommended environment: Python~3.9+, Node.js~18+ for the React app, MiKTeX or TeX~Live
+for report compilation. Core Python libraries include \texttt{streamlit}, \texttt{plotly},
+\texttt{pandas}, and \texttt{matplotlib}. Hardware requirements are modest (CPU laptop
+sufficient for the dashboard MVP; GPU optional for future NLP fine-tuning). Install with
+\texttt{pip install -r requirements.txt}, then \texttt{streamlit run app.py}. For the React
+presentation layer: \texttt{cd web \&\& npm install \&\& npm run dev}.
+
+\paragraph{Dissemination statement:}
+This Final Year Project is an independent academic research deliverable carried out under the
+direction of Prof.\ Anuradha Kar. The report uses only publicly available regulatory and
+scientific sources; it contains no proprietary data and no identifiable patient data.
+Public release of the open-source dashboard is authorised by the student via the GitHub
+repository cited above.

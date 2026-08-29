@@ -1,0 +1,58 @@
+\chapter{Appendices}
+\label{ch:appendix}
+
+\section{Significant Code Extracts}
+\label{app:code}
+
+\begin{lstlisting}[caption={Illustrative JSON country record fields},label=lst:json]
+{
+  "country": "European Union",
+  "region": "Europe",
+  "maturity_level": "Advanced",
+  "themes_scores": {
+    "data_privacy": 10,
+    "clinical_validation": 9,
+    "approval_process": 9,
+    "transparency": 9,
+    "ethics": 10,
+    "post_market": 9,
+    "liability": 8
+  }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Composite score computation (conceptual)},label=lst:score]
+def composite_score(themes_scores: dict) -> float:
+    vals = list(themes_scores.values())
+    return sum(vals) / len(vals)
+\end{lstlisting}
+
+\section{Additional Data Notes}
+\label{app:data}
+
+Theme definitions, source lists, and trend objects are stored alongside country records in \texttt{compliance\_dataset.json}. Regenerated \LaTeX\ tables and figures used in Chapter~\ref{ch:results} live under \texttt{generated/} and \texttt{figures/}. Extended country narratives appear in Appendix~\ref{app:profiles}.
+
+\section{Technical Environment}
+\label{app:env}
+
+Recommended environment: Python 3.9+, MiKTeX or TeX Live for report compilation. Core Python libraries include \texttt{streamlit}, \texttt{plotly}, \texttt{pandas}, and \texttt{matplotlib}. Hardware requirements are modest (CPU laptop sufficient for the dashboard MVP; GPU optional for future NLP fine-tuning). Install with \texttt{pip install -r requirements.txt}, then \texttt{streamlit run app.py}.
+
+\section{Declaration of Generative AI Use}
+\label{app:genai}
+
+In accordance with aivancity PFE guidelines on generative AI:
+\begin{itemize}
+  \item Generative AI assistants (including Cursor-based coding agents) were used to help structure \LaTeX\ sources, expand draft wording from existing project materials, and accelerate formatting.
+  \item All analyses, methodological choices, score interpretations, and conclusions were reviewed and validated by the student against primary regulatory sources and the curated dataset.
+  \item AI-assisted code was inspected, tested locally where applicable, and remains the student's responsibility to understand and maintain.
+  \item No AI system was used as a substitute for expert regulatory judgment; human-in-the-loop verification is part of the project design itself.
+\end{itemize}
+
+\section{Dissemination Statement}
+\label{app:auth}
+
+This Final Year Project is an independent academic research deliverable carried out under the
+direction of Prof.\ Anuradha Kar within the aivancity PGE5 programme. The report uses only
+publicly available regulatory and scientific sources; it contains no proprietary data and no
+identifiable patient data. Public release of the open-source dashboard and report is
+authorised by the student via the GitHub repository cited in the methodology chapter.
