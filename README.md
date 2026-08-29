@@ -4,6 +4,10 @@ aivancity PGE5 Final Year Project by **Remi Uttejitha Allam**.
 
 **Title:** A Literature Review and Interactive Dashboard on AI for Healthcare Compliance and Regulations across Countries
 
+## Live dashboard
+
+https://remi7025.github.io/PFE-AI-Healthcare-Compliance/
+
 ## Contents
 
 - [`PFE.pdf`](PFE.pdf) — final project report
