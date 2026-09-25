@@ -202,12 +202,9 @@ with st.sidebar:
         default=list(THEME_LABELS.values()),
     )
 
-    st.markdown("### Theme weights (live Sc)")
-    weight_vals = {}
-    for label in THEME_LABELS.values():
-        weight_vals[label] = st.slider(label, 0, 100, 14, key=f"w_{label}")
-    w_sum = sum(weight_vals.values()) or 1
-    norm_weights = {k: v / w_sum for k, v in weight_vals.items()}
+    # Equal theme weights for Composite Sc (no interactive weight panel)
+    n_themes = max(1, len(THEME_LABELS))
+    norm_weights = {label: 1.0 / n_themes for label in THEME_LABELS.values()}
 
     st.markdown("---")
     st.markdown("### About")

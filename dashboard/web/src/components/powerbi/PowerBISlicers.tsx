@@ -1,4 +1,4 @@
-import { Download, FileSpreadsheet, FileText, Filter, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, Filter, SlidersHorizontal } from "lucide-react";
 import { useDashboard } from "../../context/DashboardContext";
 import { MATURITY_ORDER, THEME_KEYS, THEME_LABELS } from "../../constants";
 import {
@@ -22,10 +22,7 @@ export function PowerBISlicers() {
     countries,
     setSelectedCountry,
     selectedCountry,
-    rawWeights,
     themeWeights,
-    setThemeWeight,
-    resetThemeWeights,
     colorblind,
     setColorblind,
     getComposite,
@@ -86,37 +83,6 @@ export function PowerBISlicers() {
           <p className="text-[10px] text-[#5c6578]">{activeFilters} active</p>
         </div>
       </div>
-
-      <SlicerPanel title="Theme weights (live Sc)">
-        <div className="space-y-2 px-2 pb-2">
-          {THEME_KEYS.map((key) => (
-            <div key={key}>
-              <div className="mb-0.5 flex justify-between text-[9px] text-[#5c6578]">
-                <span>{THEME_LABELS[key]}</span>
-                <span className="font-mono">{Math.round(themeWeights[key] * 100)}%</span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={rawWeights[key] ?? 0}
-                onChange={(e) => setThemeWeight(key, Number(e.target.value))}
-                className="w-full accent-[#118dff]"
-                disabled={!selectedThemes.includes(key)}
-              />
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={resetThemeWeights}
-            className="flex w-full items-center justify-center gap-1 rounded border border-[#d0d7e2] bg-white py-1 text-[10px] text-[#3b4453] hover:border-[#118dff]"
-          >
-            <RotateCcw className="h-3 w-3" />
-            Reset equal weights
-          </button>
-        </div>
-      </SlicerPanel>
 
       <SlicerPanel title="Region" icon={Filter}>
         {allRegions.map((region) => (
