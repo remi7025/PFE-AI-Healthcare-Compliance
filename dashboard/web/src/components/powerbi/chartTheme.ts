@@ -1,12 +1,10 @@
 import type { CountryRow, ThemeKey } from "../../types";
 import { THEME_LABELS } from "../../constants";
+import { ACCESSIBLE, scoreColorAccessible } from "../../lib/palettes";
 
-/** Score color on 0–10 scale (green = high). */
-export function scoreHeatColor(score: number): string {
-  if (score >= 8) return "#059669";
-  if (score >= 6) return "#06b6d4";
-  if (score >= 4) return "#d9b300";
-  return "#e66c37";
+/** Score color on 0–10 scale — Viridis when colorblind mode is on. */
+export function scoreHeatColor(score: number, colorblind = true): string {
+  return scoreColorAccessible(score, colorblind);
 }
 
 export function scoreHeatGlow(score: number): string {
@@ -16,18 +14,8 @@ export function scoreHeatGlow(score: number): string {
   return "0 0 6px rgba(230,108,55,0.35)";
 }
 
-export const PBI_COLORS = [
-  "#118dff",
-  "#7c3aed",
-  "#06b6d4",
-  "#059669",
-  "#e66c37",
-  "#e044a7",
-  "#12239e",
-  "#d9b300",
-  "#744ec2",
-  "#1aabba",
-];
+/** ColorBrewer Set2 — color-blind friendlier categorical series. */
+export const PBI_COLORS = [...ACCESSIBLE.categorical];
 
 /** Solid fills for Recharts bars (SVG gradient urls are unreliable inside Recharts). */
 export const PBI_FILLS = {

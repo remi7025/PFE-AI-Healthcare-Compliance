@@ -131,7 +131,7 @@ export function Sidebar() {
           </p>
         </div>
         <a
-          href="https://github.com/remi7025/AI-Healthcare-Compliance-Dashboard"
+          href="https://github.com/remi7025/PFE-AI-Healthcare-Compliance"
           target="_blank"
           rel="noreferrer"
           className="flex items-center gap-2 text-indigo-600 hover:underline"

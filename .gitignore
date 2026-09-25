@@ -16,6 +16,9 @@ dist/
 Thumbs.db
 ~$*
 
+# Unrelated local projects — do not mix with this PFE repo
+AI Clinic/
+
 # Local LaTeX build clutter (report is PFE.pdf only)
 PFE_Draft/
 *.aux

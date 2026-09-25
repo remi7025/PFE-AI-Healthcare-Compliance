@@ -1,5 +1,5 @@
 declare module "react-simple-maps" {
-  import type { ComponentType, ReactNode } from "react";
+  import type { ComponentType, MouseEvent, ReactNode } from "react";
 
   export interface Geography {
     rsmKey: string;
@@ -25,5 +25,8 @@ declare module "react-simple-maps" {
     stroke?: string;
     strokeWidth?: number;
     style?: Record<string, Record<string, string | number>>;
+    onMouseEnter?: (event: MouseEvent<SVGPathElement>) => void;
+    onMouseMove?: (event: MouseEvent<SVGPathElement>) => void;
+    onMouseLeave?: (event: MouseEvent<SVGPathElement>) => void;
   }>;
 }

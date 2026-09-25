@@ -1,6 +1,6 @@
 # Literature Review: AI for Healthcare Compliance and Regulations Across Countries
 
-**Project:** AI Clinic – Interactive Dashboard on AI Healthcare Compliance  
+**Project:** PFE — AI Healthcare Compliance Dashboard (aivancity PGE5)  
 **Supervisor:** Dr. Anuradha Kar  
 **Date:** March 2026
 
@@ -8,7 +8,7 @@
 
 ## Abstract
 
-Artificial Intelligence (AI) is transforming healthcare through diagnostics, clinical decision support, drug discovery, and patient management. However, the deployment of AI in clinical settings is governed by a complex and rapidly evolving landscape of regulations, compliance frameworks, and ethical guidelines that vary significantly across countries and regions. This literature review provides a systematic synthesis of the current regulatory landscape governing AI in healthcare, drawing on policy documents, regulatory guidelines, and peer-reviewed research across 20 countries spanning North America, Europe, Asia, the Middle East, Africa, and Oceania. The review identifies seven key thematic dimensions—data privacy and governance, clinical validation and safety, regulatory approval processes, algorithmic transparency, ethical considerations, post-market surveillance, and liability—and maps their implementation maturity across jurisdictions. Findings reveal a global trend toward risk-based regulation and comprehensive data protection, with significant disparities in enforcement capacity, AI-specific legislation, and ethical governance between advanced economies and emerging markets.
+Artificial Intelligence (AI) is transforming healthcare through diagnostics, clinical decision support, drug discovery, and patient management. However, the deployment of AI in clinical settings is governed by a complex and rapidly evolving landscape of regulations, compliance frameworks, and ethical guidelines that vary significantly across countries and regions. This literature review provides a systematic synthesis of the current regulatory landscape governing AI in healthcare, drawing on policy documents, regulatory guidelines, and peer-reviewed research across 20 countries spanning North America, Europe, Asia, the Middle East, Africa, Oceania, and South America. The review identifies seven key thematic dimensions—data privacy and governance, clinical validation and safety, regulatory approval processes, algorithmic transparency, ethical considerations, post-market surveillance, and liability—and maps their implementation maturity across jurisdictions. Findings reveal a global trend toward risk-based regulation and comprehensive data protection, with significant disparities in enforcement capacity, AI-specific legislation, and ethical governance between advanced economies and emerging markets.
 
 ---
 
@@ -41,7 +41,64 @@ A structured review was conducted using:
 - **Policy Documents:** National AI strategies, data protection laws, medical device regulations
 - **Search Terms:** "AI healthcare regulation," "medical device AI compliance," "SaMD regulation," "AI ethics healthcare," "health data governance," "algorithmic transparency medicine"
 - **Inclusion Criteria:** Publications from 2018–2026 addressing AI regulation, compliance, or ethics in healthcare contexts
-- **Scope:** 20 countries across 6 regions
+- **Scope:** 20 countries across 7 regions
+
+---
+
+## Abbreviations and Acronyms
+
+The following abbreviations are used throughout this review:
+
+| Abbreviation | Full Form |
+|--------------|-----------|
+| **ABDM** | Ayushman Bharat Digital Mission (India) |
+| **AI** | Artificial Intelligence |
+| **AIDA** | Artificial Intelligence and Data Act (Canada) |
+| **DASH** | PMDA regulatory framework for Software as a Medical Device (Japan) |
+| **DiGA** | *Digitale Gesundheitsanwendungen* — Digital Health Applications (Germany) |
+| **DPDP** | Digital Personal Data Protection Act (India) |
+| **DPIA** | Data Protection Impact Assessment |
+| **EHDS** | European Health Data Space |
+| **EMA** | European Medicines Agency |
+| **EU** | European Union |
+| **FDA** | U.S. Food and Drug Administration |
+| **GDPR** | General Data Protection Regulation (EU) |
+| **GMLP** | Good Machine Learning Practice |
+| **HIPAA** | Health Insurance Portability and Accountability Act (USA) |
+| **IMDRF** | International Medical Device Regulators Forum |
+| **IVDR** | In Vitro Diagnostic Regulation (EU) |
+| **LIME** | Local Interpretable Model-agnostic Explanations |
+| **LGPD** | *Lei Geral de Proteção de Dados* — General Data Protection Law (Brazil) |
+| **MDR** | Medical Device Regulation (EU) |
+| **MHRA** | Medicines and Healthcare products Regulatory Agency (UK) |
+| **ML** | Machine Learning |
+| **MvPI** | Materiovigilance Programme of India |
+| **NDPA** | Nigeria Data Protection Act |
+| **NICE** | National Institute for Health and Care Excellence (UK) |
+| **NIST AI RMF** | NIST Artificial Intelligence Risk Management Framework (USA) |
+| **NMPA** | National Medical Products Administration (China) |
+| **nFADP** | New Federal Act on Data Protection (Switzerland) |
+| **OECD** | Organisation for Economic Co-operation and Development |
+| **PCCP** | Predetermined Change Control Plan |
+| **PDPA** | Personal Data Protection Act (Thailand) |
+| **PDPL** | Personal Data Protection Law (Saudi Arabia) |
+| **PHI** | Protected Health Information |
+| **PIPEDA** | Personal Information Protection and Electronic Documents Act (Canada) |
+| **PIPL** | Personal Information Protection Law (China) |
+| **PMA** | Premarket Approval |
+| **PMDA** | Pharmaceuticals and Medical Devices Agency (Japan) |
+| **POPIA** | Protection of Personal Information Act (South Africa) |
+| **RWD** | Real-World Data |
+| **RWE** | Real-World Evidence |
+| **SaMD** | Software as a Medical Device |
+| **SHAP** | SHapley Additive exPlanations |
+| **TGA** | Therapeutic Goods Administration (Australia) |
+| **TPLC** | Total Product Lifecycle |
+| **UAE** | United Arab Emirates |
+| **UK** | United Kingdom |
+| **USA** | United States of America |
+| **WHO** | World Health Organization |
+| **XAI** | Explainable Artificial Intelligence |
 
 ---
 

@@ -3,6 +3,7 @@ import {
   BarChart3,
   BookOpen,
   GitCompare,
+  GitCompareArrows,
   Globe2,
   LayoutDashboard,
   Bot,
@@ -15,6 +16,7 @@ const PAGES = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "analysis", label: "Theme Analysis", icon: BarChart3 },
   { id: "comparison", label: "Comparison", icon: GitCompare },
+  { id: "diff", label: "Diff", icon: GitCompareArrows },
   { id: "trends", label: "Trends & Use Cases", icon: TrendingUp },
   { id: "details", label: "Country Detail", icon: Globe2 },
   { id: "rag", label: "RAG Assistant", icon: Bot },
@@ -24,7 +26,7 @@ const PAGES = [
 export type PowerBIPage = (typeof PAGES)[number]["id"];
 
 export function PowerBIHeader() {
-  const { activePage, setActivePage, filtered } = useDashboard();
+  const { activePage, setActivePage } = useDashboard();
 
   return (
     <header className="pbi-header relative shrink-0">
@@ -36,16 +38,13 @@ export function PowerBIHeader() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="bg-gradient-to-r from-white via-white to-blue-200 bg-clip-text text-base font-bold tracking-tight text-transparent">
-                AI Healthcare Compliance Intelligence
+                AI Healthcare Compliance
               </h1>
               <span className="flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-300">
                 <span className="live-dot inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 Live
               </span>
             </div>
-            <p className="mt-0.5 text-[11px] text-white/50">
-              Dr. Anuradha Kar · {filtered.length} countries · 7 compliance themes · Mar 2026
-            </p>
           </div>
         </div>
         <div className="hidden items-center gap-3 md:flex">

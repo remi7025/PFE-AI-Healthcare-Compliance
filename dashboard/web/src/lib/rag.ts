@@ -21,8 +21,13 @@ export interface RagResult {
   answer: string;
   citations: RagCitation[];
   latencyMs: number;
-  mode: "hybrid-lexical";
+  mode: "hybrid-lexical" | "hybrid-rrf" | "abstain";
+  abstained?: boolean;
+  topScore?: number;
 }
+
+/** Lexical confidence gate — below this, abstain instead of forcing matches. */
+export const LEXICAL_CONFIDENCE_THRESHOLD = 0.35;
 
 const STOP = new Set(
   "a an the and or of to in on for with by from as is are was were be been being this that these those it its into about over under than then so if what which who how when where why can could should would may might will shall not no yes do does did done have has had having".split(
@@ -173,10 +178,17 @@ export function runRagQuery(
     snippet: chunk.text,
   }));
 
+  const topScore = citations[0]?.score ?? 0;
+  const abstained = topScore < LEXICAL_CONFIDENCE_THRESHOLD;
+
   return {
-    answer: synthesizeAnswer(question, citations),
-    citations,
+    answer: abstained
+      ? "Insufficient evidence in the indexed corpus"
+      : synthesizeAnswer(question, citations),
+    citations: abstained ? [] : citations,
     latencyMs: Math.round(performance.now() - t0),
-    mode: "hybrid-lexical",
+    mode: abstained ? "abstain" : "hybrid-lexical",
+    abstained,
+    topScore,
   };
 }

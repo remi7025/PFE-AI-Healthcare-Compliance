@@ -1,5 +1,5 @@
 {
-  "name": "ai-clinic-dashboard",
+  "name": "pfe-ai-healthcare-compliance-dashboard",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -16,7 +16,8 @@
     "react-markdown": "^9.0.3",
     "react-simple-maps": "^3.0.0",
     "recharts": "^2.15.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/react": "^18.3.18",

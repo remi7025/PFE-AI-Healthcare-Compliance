@@ -11,12 +11,8 @@ import {
   YAxis,
 } from "recharts";
 import {
-  BookOpen,
   Building2,
   Dna,
-  FileText,
-  GraduationCap,
-  List,
   Microscope,
   Pill,
   Search,
@@ -62,10 +58,7 @@ function parseLiteratureMeta(text: string) {
   const sections = (text.match(/^##\s+(.+)$/gm) ?? []).map((m) =>
     m.replace(/^##\s+/, "").trim(),
   );
-  const abstractMatch = text.match(/## Abstract\s*\n+([\s\S]*?)(?=\n---|\n## )/);
-  const abstract = abstractMatch?.[1]?.replace(/\*\*/g, "").trim() ?? "";
-  const words = text.split(/\s+/).filter(Boolean).length;
-  return { sections, abstract, words };
+  return { sections };
 }
 
 function readerContent(text: string): string {
@@ -171,57 +164,8 @@ export function LiteraturePage() {
     }
   }, []);
 
-  const topTopic = keywords[0];
-
   return (
     <div className="flex h-full flex-col gap-3 overflow-y-auto p-3">
-      {/* Hero */}
-      <header className="literature-hero shrink-0">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white">
-                <BookOpen className="h-4 w-4" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
-                AI Clinic · Research
-              </span>
-            </div>
-            <h1 className="text-lg font-bold text-white sm:text-xl">
-              Literature Review: AI Healthcare Compliance
-            </h1>
-            <p className="mt-1 text-[12px] text-white/75">
-              Supervisor: Dr. Anuradha Kar · Systematic synthesis across 20 countries & 6 regions
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: "Words", value: meta.words.toLocaleString(), icon: FileText },
-              { label: "Sections", value: String(meta.sections.length), icon: List },
-              { label: "References", value: String(references.length), icon: GraduationCap },
-              {
-                label: "Top topic",
-                value: topTopic ? topTopic.topic.split("/")[0].trim().slice(0, 14) : "—",
-                icon: Microscope,
-              },
-            ].map(({ label, value, icon: Icon }) => (
-              <div key={label} className="literature-stat-pill">
-                <Icon className="h-3.5 w-3.5 text-white/80" />
-                <div>
-                  <p className="text-sm font-bold text-white">{value}</p>
-                  <p className="text-[9px] uppercase tracking-wide text-white/60">{label}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        {meta.abstract && (
-          <p className="mt-3 max-w-4xl border-t border-white/15 pt-3 text-[12px] leading-relaxed text-white/85">
-            {meta.abstract.length > 320 ? `${meta.abstract.slice(0, 320)}…` : meta.abstract}
-          </p>
-        )}
-      </header>
-
       {/* Insights row */}
       <div className="grid shrink-0 grid-cols-12 gap-3">
         <div className="col-span-12 lg:col-span-7">

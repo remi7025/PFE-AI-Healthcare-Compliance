@@ -1,0 +1,36 @@
+# Unified local/cloud deployment for React + Streamlit + RAG API
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data:ro
+      - ./literature_review.md:/app/literature_review.md:ro
+      - ./api:/app/api:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./:/app
+    depends_on:
+      - api
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        VITE_RAG_API: http://localhost:8000
+    ports:
+      - "4173:80"
+    depends_on:
+      - api

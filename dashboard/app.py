@@ -97,9 +97,11 @@ st.markdown("""
 @st.cache_data
 def load_data():
     data_path = Path(__file__).parent / "data" / "compliance_dataset.json"
-    with open(data_path, "r", encoding="utf-8") as f:
-        raw = json.load(f)
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent))
+    from api.schemas import validate_dataset_file
 
+    raw = validate_dataset_file(data_path)
     countries = raw["countries"]
     rows = []
     for c in countries:
@@ -200,6 +202,13 @@ with st.sidebar:
         default=list(THEME_LABELS.values()),
     )
 
+    st.markdown("### Theme weights (live Sc)")
+    weight_vals = {}
+    for label in THEME_LABELS.values():
+        weight_vals[label] = st.slider(label, 0, 100, 14, key=f"w_{label}")
+    w_sum = sum(weight_vals.values()) or 1
+    norm_weights = {k: v / w_sum for k, v in weight_vals.items()}
+
     st.markdown("---")
     st.markdown("### About")
     st.markdown(
@@ -215,6 +224,24 @@ filtered_df = df[
     (df["Region"].isin(selected_regions)) & (df["Maturity"].isin(maturity_filter))
 ].copy()
 
+# Reverse-map selected theme labels to score columns
+theme_label_to_col = {v: k for k, v in THEME_LABELS.items()}
+selected_score_cols = [theme_label_to_col[t] for t in selected_themes]
+
+# Weighted composite Sc
+def weighted_sc(row):
+    if not selected_score_cols:
+        return 0.0
+    num = den = 0.0
+    for label in selected_themes:
+        col = theme_label_to_col[label]
+        w = norm_weights.get(label, 0)
+        num += float(row[col]) * w
+        den += w
+    return round(num / den, 2) if den else 0.0
+
+filtered_df["Composite_Sc"] = filtered_df.apply(weighted_sc, axis=1)
+
 # Optional export of exactly what you're looking at
 st.sidebar.download_button(
     label="Download filtered data (CSV)",
@@ -224,16 +251,27 @@ st.sidebar.download_button(
     use_container_width=True,
 )
 
-# Reverse-map selected theme labels to score columns
-theme_label_to_col = {v: k for k, v in THEME_LABELS.items()}
-selected_score_cols = [theme_label_to_col[t] for t in selected_themes]
+# Excel export (openpyxl / xlsxwriter optional)
+try:
+    import io
+    buf = io.BytesIO()
+    filtered_df.to_excel(buf, index=False, engine="openpyxl")
+    st.sidebar.download_button(
+        label="Download Excel workbook",
+        data=buf.getvalue(),
+        file_name="filtered_compliance_dataset.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=True,
+    )
+except Exception:
+    pass
 
 # ---------------------------------------------------------------------------
 # Header
 # ---------------------------------------------------------------------------
 st.markdown('<p class="main-header">AI Healthcare Compliance & Regulations Dashboard</p>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="sub-header">Interactive comparison of AI regulations in healthcare across 20 countries and 6 regions</p>',
+    '<p class="sub-header">Interactive comparison of AI regulations in healthcare across 20 countries and 7 regions</p>',
     unsafe_allow_html=True,
 )
 
@@ -246,10 +284,10 @@ with col1:
 with col2:
     st.metric("Regions", filtered_df["Region"].nunique())
 with col3:
-    st.metric("Total AI Devices Approved", f"{filtered_df['AI Devices Approved'].sum():,}")
+    st.metric("Device throughput (not Sc)", f"{filtered_df['AI Devices Approved'].sum():,}")
 with col4:
-    avg_score = filtered_df[[c for c in selected_score_cols]].mean().mean() if selected_score_cols else 0
-    st.metric("Avg Compliance Score", f"{avg_score:.1f}/10")
+    avg_score = filtered_df["Composite_Sc"].mean() if len(filtered_df) else 0
+    st.metric("Avg rigor (Sc)", f"{avg_score:.1f}/10")
 
 # ---------------------------------------------------------------------------
 # Executive snapshot (clean, professional summary)
@@ -258,7 +296,7 @@ st.markdown('<div class="exec-snapshot">', unsafe_allow_html=True)
 st.markdown("### Executive Snapshot")
 
 if selected_score_cols:
-    overall_scores = filtered_df[selected_score_cols].mean(axis=1)
+    overall_scores = filtered_df["Composite_Sc"]
     best_idx = overall_scores.idxmax()
     worst_idx = overall_scores.idxmin()
 
@@ -327,9 +365,10 @@ st.markdown("</div>", unsafe_allow_html=True)
 # ---------------------------------------------------------------------------
 # Tabs
 # ---------------------------------------------------------------------------
-tab_map, tab_compare, tab_themes, tab_trends, tab_details, tab_usecases, tab_review = st.tabs([
+tab_map, tab_compare, tab_diff, tab_themes, tab_trends, tab_details, tab_usecases, tab_review = st.tabs([
     "World Map",
     "Country Comparison",
+    "Diff View",
     "Theme Analysis",
     "Global Trends",
     "Country Details",
@@ -343,28 +382,25 @@ with tab_map:
 
     map_metric = st.selectbox(
         "Map colour metric",
-        ["Overall Score", "AI Devices Approved", "First AI Reg Year"] + list(THEME_LABELS.values()),
+        ["Composite Sc (rigor)", "AI Devices (throughput)", "First AI Reg Year"] + list(THEME_LABELS.values()),
         index=0,
         key="map_metric",
     )
 
     plot_df = filtered_df.copy()
 
-    if map_metric == "Overall Score":
-        if selected_score_cols:
-            plot_df["value"] = plot_df[selected_score_cols].mean(axis=1).round(1)
-        else:
-            plot_df["value"] = 0
-        color_label = "Overall Score"
+    if map_metric == "Composite Sc (rigor)":
+        plot_df["value"] = plot_df["Composite_Sc"]
+        color_label = "Composite Sc"
         color_scale = "Viridis"
-    elif map_metric == "AI Devices Approved":
+    elif map_metric == "AI Devices (throughput)":
         plot_df["value"] = plot_df["AI Devices Approved"]
-        color_label = "Devices Approved"
+        color_label = "Devices (throughput)"
         color_scale = "Blues"
     elif map_metric == "First AI Reg Year":
         plot_df["value"] = plot_df["First AI Reg Year"]
         color_label = "Year"
-        color_scale = "RdYlGn_r"
+        color_scale = "Viridis"
     else:
         col_key = theme_label_to_col[map_metric]
         plot_df["value"] = plot_df[col_key]
@@ -494,6 +530,57 @@ with tab_compare:
         )
     else:
         st.info("Please select at least one country to compare.")
+
+
+# ===================== TAB 2b: DIFF VIEW =====================
+with tab_diff:
+    st.subheader("Jurisdictional Diff — side-by-side deltas")
+    countries_list = sorted(filtered_df["Country"].tolist())
+    if len(countries_list) >= 2:
+        c1, c2 = st.columns(2)
+        with c1:
+            diff_a = st.selectbox("Country A", countries_list, index=0, key="diff_a")
+        with c2:
+            diff_b = st.selectbox(
+                "Country B",
+                countries_list,
+                index=min(1, len(countries_list) - 1),
+                key="diff_b",
+            )
+        ra = filtered_df[filtered_df["Country"] == diff_a].iloc[0]
+        rb = filtered_df[filtered_df["Country"] == diff_b].iloc[0]
+        d1, d2, d3 = st.columns(3)
+        d1.metric("Δ Sc (A−B)", f"{ra['Composite_Sc'] - rb['Composite_Sc']:+.2f}")
+        d2.metric("A rigor Sc / throughput", f"{ra['Composite_Sc']:.2f} / {int(ra['AI Devices Approved'])}")
+        d3.metric("B rigor Sc / throughput", f"{rb['Composite_Sc']:.2f} / {int(rb['AI Devices Approved'])}")
+        delta_rows = []
+        for col in selected_score_cols:
+            label = THEME_LABELS[col]
+            delta_rows.append(
+                {
+                    "Theme": label,
+                    "A": float(ra[col]),
+                    "B": float(rb[col]),
+                    "Delta": round(float(ra[col]) - float(rb[col]), 1),
+                }
+            )
+        delta_df = pd.DataFrame(delta_rows)
+        fig_delta = px.bar(
+            delta_df,
+            x="Delta",
+            y="Theme",
+            orientation="h",
+            color="Delta",
+            color_continuous_scale="RdBu",
+            color_continuous_midpoint=0,
+            title="Theme score deltas (A − B)",
+        )
+        fig_delta.update_layout(height=360)
+        st.plotly_chart(fig_delta, use_container_width=True)
+        st.dataframe(delta_df, use_container_width=True, hide_index=True)
+        st.caption("Green/blue = A higher; red = B higher. Device throughput is shown separately from Sc.")
+    else:
+        st.info("Select at least two countries in filters.")
 
 
 # ===================== TAB 3: THEME ANALYSIS =====================

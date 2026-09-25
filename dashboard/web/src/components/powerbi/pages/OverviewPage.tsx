@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef, useState, type MouseEvent } from "react";
 import {
   Bar,
   BarChart,
@@ -19,7 +19,7 @@ import {
 import { Activity, Cpu, Globe, Layers, Shield } from "lucide-react";
 import { useDashboard } from "../../../context/DashboardContext";
 import { MATURITY_COLORS, MATURITY_ORDER, THEME_LABELS } from "../../../constants";
-import { interpolateColor, overallScore } from "../../../lib/data";
+import { interpolateColor } from "../../../lib/data";
 import { InsightStrip } from "../InsightStrip";
 import { KpiTile, VisualTile } from "../VisualTile";
 import { geoIso3, horizontalBarData } from "../chartHelpers";
@@ -28,49 +28,66 @@ import { PBI_COLORS, PBI_FILLS, scoreHeatColor, scoreHeatGlow, themeAverages } f
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 const CHART_H = 240;
 
+type MapTooltipState = {
+  x: number;
+  y: number;
+  name: string;
+  region: string;
+  maturity: string;
+  score: number;
+};
+
 export function OverviewPage() {
-  const { filtered, selectedThemes } = useDashboard();
+  const { filtered, selectedThemes, getComposite, colorblind } = useDashboard();
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [mapTooltip, setMapTooltip] = useState<MapTooltipState | null>(null);
 
   const stats = useMemo(() => {
     const devices = filtered.reduce((s, r) => s + r.aiDevicesApproved, 0);
     const avg =
       selectedThemes.length && filtered.length
         ? (
-            filtered.reduce((s, r) => s + overallScore(r, selectedThemes), 0) /
-            filtered.length
+            filtered.reduce((s, r) => s + getComposite(r), 0) / filtered.length
           ).toFixed(1)
         : "—";
     const advanced = filtered.filter((r) => r.maturity === "Advanced").length;
     return { devices, avg, advanced, count: filtered.length };
-  }, [filtered, selectedThemes]);
+  }, [filtered, selectedThemes, getComposite]);
 
   const topCountries = useMemo(() => {
     const rows = filtered.map((r) => ({
       country: r.country,
-      score: overallScore(r, selectedThemes),
+      score: getComposite(r),
     }));
     return horizontalBarData(
       rows.sort((a, b) => b.score - a.score).slice(0, 8),
       "score",
     );
-  }, [filtered, selectedThemes]);
+  }, [filtered, getComposite]);
 
   const mapLookup = useMemo(() => {
     const mapRows = filtered.filter((r) => r.iso !== "EU");
-    const values = mapRows.map((r) => overallScore(r, selectedThemes));
+    const values = mapRows.map((r) => getComposite(r));
     const min = values.length ? Math.min(...values) : 0;
     const max = values.length ? Math.max(...values) : 10;
-    const byIso: Record<string, { color: string; value: number; name: string }> = {};
+    const byIso: Record<
+      string,
+      { color: string; value: number; name: string; region: string; maturity: string }
+    > = {};
     for (const r of mapRows) {
-      const score = overallScore(r, selectedThemes);
+      const score = getComposite(r);
       byIso[r.iso3] = {
-        color: interpolateColor(score, min, max),
+        color: colorblind
+          ? scoreHeatColor(score, true)
+          : interpolateColor(score, min, max),
         value: score,
         name: r.country,
+        region: r.region,
+        maturity: r.maturity,
       };
     }
     return { byIso };
-  }, [filtered, selectedThemes]);
+  }, [filtered, getComposite, colorblind]);
 
   const maturityData = MATURITY_ORDER.map((m) => ({
     name: m,
@@ -95,14 +112,30 @@ export function OverviewPage() {
     [filtered],
   );
 
+  const showMapTooltip = (
+    entry: (typeof mapLookup.byIso)[string],
+    event: MouseEvent,
+  ) => {
+    const rect = mapRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setMapTooltip({
+      x: event.clientX - rect.left + 12,
+      y: event.clientY - rect.top - 8,
+      name: entry.name,
+      region: entry.region,
+      maturity: entry.maturity,
+      score: entry.value,
+    });
+  };
+
   return (
     <div className="flex h-full flex-col gap-3 p-3">
       <div className="grid shrink-0 grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
         <KpiTile label="Countries in view" value={String(stats.count)} icon={Globe}
           gradient="linear-gradient(135deg, #118dff, #06b6d4)" glow="rgba(17,141,255,0.25)" />
-        <KpiTile label="Avg compliance" value={`${stats.avg}/10`} icon={Shield}
+        <KpiTile label="Avg rigor (Sc)" value={`${stats.avg}/10`} icon={Shield}
           gradient="linear-gradient(135deg, #7c3aed, #118dff)" glow="rgba(124,58,237,0.25)" />
-        <KpiTile label="AI devices approved" value={stats.devices.toLocaleString()} icon={Cpu}
+        <KpiTile label="Device throughput" value={stats.devices.toLocaleString()} icon={Cpu}
           gradient="linear-gradient(135deg, #12239e, #744ec2)" glow="rgba(18,35,158,0.25)" />
         <KpiTile label="Advanced maturity" value={String(stats.advanced)} icon={Activity}
           gradient="linear-gradient(135deg, #059669, #06b6d4)" glow="rgba(5,150,105,0.25)" />
@@ -116,7 +149,7 @@ export function OverviewPage() {
       <div className="grid min-h-0 flex-1 grid-cols-12 gap-3">
         <div className="col-span-12 lg:col-span-5">
           <VisualTile title="Global regulatory maturity" subtitle="Overall score (1–10)" accent="blue">
-            <div className="map-container" style={{ height: CHART_H }}>
+            <div ref={mapRef} className="map-container relative" style={{ height: CHART_H }}>
               <ComposableMap projection="geoEqualEarth" className="h-full w-full">
                 <ZoomableGroup>
                   <Geographies geography={GEO_URL}>
@@ -132,13 +165,17 @@ export function OverviewPage() {
                             stroke="#fff"
                             strokeWidth={0.4}
                             style={{
-                              default: { outline: "none" },
+                              default: { outline: "none", cursor: entry ? "pointer" : "default" },
                               hover: {
                                 fill: entry ? "#118dff" : "#d0d5dd",
                                 outline: "none",
+                                cursor: entry ? "pointer" : "default",
                               },
                               pressed: { outline: "none" },
                             }}
+                            onMouseEnter={(event) => entry && showMapTooltip(entry, event)}
+                            onMouseMove={(event) => entry && showMapTooltip(entry, event)}
+                            onMouseLeave={() => setMapTooltip(null)}
                           />
                         );
                       })
@@ -146,6 +183,19 @@ export function OverviewPage() {
                   </Geographies>
                 </ZoomableGroup>
               </ComposableMap>
+              {mapTooltip && (
+                <div
+                  className="map-country-tooltip pointer-events-none absolute z-10"
+                  style={{ left: mapTooltip.x, top: mapTooltip.y }}
+                >
+                  <p className="text-[12px] font-semibold text-[#1a2332]">{mapTooltip.name}</p>
+                  <p className="text-[11px] text-[#5c6578]">Region={mapTooltip.region}</p>
+                  <p className="text-[11px] text-[#5c6578]">Maturity={mapTooltip.maturity}</p>
+                  <p className="text-[11px] text-[#5c6578]">
+                    Overall Score={mapTooltip.score.toFixed(1)}
+                  </p>
+                </div>
+              )}
             </div>
             <p className="mt-1 text-center text-[9px] text-[#8a929e]">
               EU is an aggregate in data · member states colored individually

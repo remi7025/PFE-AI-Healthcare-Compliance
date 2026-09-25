@@ -5,6 +5,7 @@ import { LoadingScreen } from "./components/powerbi/LoadingScreen";
 import { OverviewPage } from "./components/powerbi/pages/OverviewPage";
 import { AnalysisPage } from "./components/powerbi/pages/AnalysisPage";
 import { ComparisonPage } from "./components/powerbi/pages/ComparisonPage";
+import { DiffPage } from "./components/powerbi/pages/DiffPage";
 import { TrendsPage } from "./components/powerbi/pages/TrendsPage";
 import { DetailsPage } from "./components/powerbi/pages/DetailsPage";
 import { LiteraturePage } from "./components/powerbi/pages/LiteraturePage";
@@ -17,6 +18,7 @@ function PageContent() {
       {activePage === "overview" && <OverviewPage />}
       {activePage === "analysis" && <AnalysisPage />}
       {activePage === "comparison" && <ComparisonPage />}
+      {activePage === "diff" && <DiffPage />}
       {activePage === "trends" && <TrendsPage />}
       {activePage === "details" && <DetailsPage />}
       {activePage === "rag" && <RagPage />}

@@ -1,7 +1,12 @@
-import { Download, Filter, SlidersHorizontal } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, Filter, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { useDashboard } from "../../context/DashboardContext";
 import { MATURITY_ORDER, THEME_KEYS, THEME_LABELS } from "../../constants";
-import { exportCsv } from "../../lib/data";
+import {
+  downloadBlob,
+  exportCountryPdfHtml,
+  exportCsv,
+  exportExcelXml,
+} from "../../lib/export";
 import type { ThemeKey } from "../../types";
 
 export function PowerBISlicers() {
@@ -17,6 +22,13 @@ export function PowerBISlicers() {
     countries,
     setSelectedCountry,
     selectedCountry,
+    rawWeights,
+    themeWeights,
+    setThemeWeight,
+    resetThemeWeights,
+    colorblind,
+    setColorblind,
+    getComposite,
   } = useDashboard();
 
   const toggleInList = (value: string, selected: string[], setter: (v: string[]) => void) => {
@@ -33,14 +45,38 @@ export function PowerBISlicers() {
     );
   };
 
-  const csv = exportCsv(filtered, selectedThemes);
-  const csvUrl = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-
   const activeFilters =
     selectedRegions.length + selectedMaturity.length + selectedThemes.length;
 
+  const onCsv = () => {
+    const csv = exportCsv(filtered, selectedThemes, themeWeights);
+    downloadBlob("filtered_compliance_dataset.csv", csv, "text/csv");
+  };
+
+  const onExcel = () => {
+    const xml = exportExcelXml(filtered, selectedThemes, themeWeights);
+    downloadBlob(
+      "filtered_compliance_dataset.xls",
+      xml,
+      "application/vnd.ms-excel",
+    );
+  };
+
+  const onPdf = () => {
+    const row =
+      (selectedCountry && countries.find((c) => c.country === selectedCountry)) ||
+      filtered[0];
+    if (!row) return;
+    const html = exportCountryPdfHtml(row, getComposite(row));
+    const w = window.open("", "_blank");
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+    }
+  };
+
   return (
-    <aside className="flex w-[230px] shrink-0 flex-col gap-2 overflow-y-auto border-r border-[#dde3ec] bg-gradient-to-b from-[#f8f9fc] to-[#eef1f6] p-3">
+    <aside className="flex w-[250px] shrink-0 flex-col gap-2 overflow-y-auto border-r border-[#dde3ec] bg-gradient-to-b from-[#f8f9fc] to-[#eef1f6] p-3">
       <div className="mb-1 flex items-center gap-2 px-1">
         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-[#118dff] to-[#7c3aed] text-white shadow-md shadow-blue-500/25">
           <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -50,6 +86,37 @@ export function PowerBISlicers() {
           <p className="text-[10px] text-[#5c6578]">{activeFilters} active</p>
         </div>
       </div>
+
+      <SlicerPanel title="Theme weights (live Sc)">
+        <div className="space-y-2 px-2 pb-2">
+          {THEME_KEYS.map((key) => (
+            <div key={key}>
+              <div className="mb-0.5 flex justify-between text-[9px] text-[#5c6578]">
+                <span>{THEME_LABELS[key]}</span>
+                <span className="font-mono">{Math.round(themeWeights[key] * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={rawWeights[key] ?? 0}
+                onChange={(e) => setThemeWeight(key, Number(e.target.value))}
+                className="w-full accent-[#118dff]"
+                disabled={!selectedThemes.includes(key)}
+              />
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={resetThemeWeights}
+            className="flex w-full items-center justify-center gap-1 rounded border border-[#d0d7e2] bg-white py-1 text-[10px] text-[#3b4453] hover:border-[#118dff]"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Reset equal weights
+          </button>
+        </div>
+      </SlicerPanel>
 
       <SlicerPanel title="Region" icon={Filter}>
         {allRegions.map((region) => (
@@ -101,14 +168,40 @@ export function PowerBISlicers() {
         </select>
       </SlicerPanel>
 
-      <a
-        href={csvUrl}
-        download="filtered_compliance_dataset.csv"
-        className="export-btn mt-auto flex items-center justify-center gap-2 rounded px-3 py-2.5 text-xs font-bold"
-      >
-        <Download className="h-4 w-4" />
-        Export dataset
-      </a>
+      <SlicerPanel title="Accessibility">
+        <SlicerItem
+          label="Color-blind palettes"
+          checked={colorblind}
+          onChange={() => setColorblind(!colorblind)}
+        />
+      </SlicerPanel>
+
+      <div className="mt-auto space-y-1.5">
+        <button
+          type="button"
+          onClick={onCsv}
+          className="export-btn flex w-full items-center justify-center gap-2 rounded px-3 py-2 text-xs font-bold"
+        >
+          <Download className="h-3.5 w-3.5" />
+          Export CSV
+        </button>
+        <button
+          type="button"
+          onClick={onExcel}
+          className="flex w-full items-center justify-center gap-2 rounded border border-[#118dff] bg-white px-3 py-2 text-xs font-bold text-[#118dff] hover:bg-[#eef6ff]"
+        >
+          <FileSpreadsheet className="h-3.5 w-3.5" />
+          Export Excel
+        </button>
+        <button
+          type="button"
+          onClick={onPdf}
+          className="flex w-full items-center justify-center gap-2 rounded border border-[#059669] bg-white px-3 py-2 text-xs font-bold text-[#059669] hover:bg-[#ecfdf5]"
+        >
+          <FileText className="h-3.5 w-3.5" />
+          PDF country dossier
+        </button>
+      </div>
 
       <p className="px-1 text-center text-[9px] leading-relaxed text-[#a0a8b8]">
         Supervisor: Dr. Anuradha Kar
@@ -134,7 +227,7 @@ function SlicerPanel({
         {Icon && <Icon className="h-3 w-3" />}
         {title}
       </div>
-      <div className="max-h-32 overflow-y-auto px-1 py-1">{children}</div>
+      <div className="max-h-40 overflow-y-auto px-1 py-1">{children}</div>
     </div>
   );
 }

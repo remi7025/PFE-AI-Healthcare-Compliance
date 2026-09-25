@@ -26,7 +26,13 @@ const SECTIONS = [
 ] as const;
 
 export function DetailsPage() {
-  const { filtered, selectedThemes, selectedCountry, setSelectedCountry } = useDashboard();
+  const {
+    filtered,
+    selectedThemes,
+    selectedCountry,
+    setSelectedCountry,
+    getComposite,
+  } = useDashboard();
 
   const row = useMemo(() => {
     if (selectedCountry) {
@@ -51,6 +57,8 @@ export function DetailsPage() {
     );
   }
 
+  const sc = getComposite(row);
+
   return (
     <div className="grid h-full grid-cols-12 gap-3 p-3">
       <div className="col-span-12 lg:col-span-4">
@@ -67,10 +75,20 @@ export function DetailsPage() {
                 </option>
               ))}
             </select>
+            <div className="mb-2 grid grid-cols-2 gap-2">
+              <div className="rounded border border-emerald-200 bg-emerald-50 px-2 py-2">
+                <p className="text-[9px] font-semibold uppercase text-emerald-800">Rigor Sc</p>
+                <p className="text-lg font-bold text-emerald-900">{sc.toFixed(2)}</p>
+              </div>
+              <div className="rounded border border-slate-200 bg-slate-50 px-2 py-2">
+                <p className="text-[9px] font-semibold uppercase text-slate-600">Throughput</p>
+                <p className="text-lg font-bold text-slate-800">{row.aiDevicesApproved}</p>
+                <p className="text-[8px] text-slate-500">Not part of Sc</p>
+              </div>
+            </div>
             <Row label="Region" value={row.region} />
             <Row label="Maturity" value={row.maturity} />
             <Row label="Regulatory body" value={row.regulatoryBody} />
-            <Row label="AI devices approved" value={String(row.aiDevicesApproved)} />
             <Row label="First AI regulation" value={String(row.firstAiRegYear)} />
             <Row label="Privacy law" value={row.dataPrivacyLaw} />
             <Row label="AI regulation" value={row.aiRegulation} />

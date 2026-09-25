@@ -21,8 +21,13 @@ import { horizontalBarData } from "../chartHelpers";
 import { PBI_COLORS } from "../chartTheme";
 
 export function ComparisonPage() {
-  const { filtered, selectedThemes, compareCountries, setCompareCountries } =
-    useDashboard();
+  const {
+    filtered,
+    selectedThemes,
+    compareCountries,
+    setCompareCountries,
+    getComposite,
+  } = useDashboard();
 
   const compareRows = filtered.filter((r) => compareCountries.includes(r.country));
 
@@ -48,6 +53,18 @@ export function ComparisonPage() {
         "aiDevicesApproved",
       ),
     [compareRows],
+  );
+
+  const rigorBarData = useMemo(
+    () =>
+      horizontalBarData(
+        compareRows.map((r) => ({
+          country: r.country,
+          sc: getComposite(r),
+        })),
+        "sc",
+      ),
+    [compareRows, getComposite],
   );
 
   const toggle = (country: string) => {
@@ -86,7 +103,7 @@ export function ComparisonPage() {
         <div className="col-span-12 lg:col-span-6">
           <VisualTile title="Theme comparison radar">
             {compareRows.length && selectedThemes.length ? (
-              <ResponsiveContainer width="100%" height={320}>
+              <ResponsiveContainer width="100%" height={300}>
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="#edebe9" />
                   <PolarAngleAxis dataKey="theme" tick={{ fontSize: 9 }} />
@@ -111,25 +128,41 @@ export function ComparisonPage() {
           </VisualTile>
         </div>
 
-        <div className="col-span-12 lg:col-span-6">
-          <VisualTile title="AI devices approved">
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart
-                data={deviceBarData}
-                layout="vertical"
-                margin={{ left: 8, right: 16 }}
-              >
-                <XAxis type="number" tick={{ fontSize: 10 }} />
-                <YAxis type="category" dataKey="country" width={90} tick={{ fontSize: 9 }} />
-                <Tooltip />
-                <Bar dataKey="aiDevicesApproved" barSize={16}>
-                  {deviceBarData.map((r) => (
-                    <Cell key={r.country} fill={MATURITY_COLORS[r.maturity] ?? "#118dff"} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </VisualTile>
+        <div className="col-span-12 lg:col-span-6 grid gap-2">
+          <div className="rounded border-2 border-emerald-200 bg-emerald-50/40 p-1">
+            <VisualTile
+              title="Regulatory rigor (composite Sc)"
+              subtitle="Weighted theme average — not market size"
+            >
+              <ResponsiveContainer width="100%" height={140}>
+                <BarChart data={rigorBarData} layout="vertical" margin={{ left: 8, right: 16 }}>
+                  <XAxis type="number" domain={[0, 10]} tick={{ fontSize: 10 }} />
+                  <YAxis type="category" dataKey="country" width={90} tick={{ fontSize: 9 }} />
+                  <Tooltip formatter={(v: number) => [`${v}/10`, "Sc"]} />
+                  <Bar dataKey="sc" fill="#059669" barSize={12} radius={[0, 3, 3, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </VisualTile>
+          </div>
+          <div className="rounded border-2 border-slate-300 bg-slate-50/60 p-1">
+            <VisualTile
+              title="Market throughput (device authorizations)"
+              subtitle="Separate from Sc — not cross-border comparable"
+            >
+              <ResponsiveContainer width="100%" height={140}>
+                <BarChart data={deviceBarData} layout="vertical" margin={{ left: 8, right: 16 }}>
+                  <XAxis type="number" tick={{ fontSize: 10 }} />
+                  <YAxis type="category" dataKey="country" width={90} tick={{ fontSize: 9 }} />
+                  <Tooltip />
+                  <Bar dataKey="aiDevicesApproved" barSize={12}>
+                    {deviceBarData.map((r) => (
+                      <Cell key={r.country} fill={MATURITY_COLORS[r.maturity] ?? "#64748b"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </VisualTile>
+          </div>
         </div>
 
         <div className="col-span-12">
@@ -142,12 +175,22 @@ export function ComparisonPage() {
                       "Country",
                       "Region",
                       "Maturity",
+                      "Sc (rigor)",
+                      "Throughput",
                       "Regulatory Body",
                       "Privacy Law",
                       "AI Regulation",
-                      "Devices",
                     ].map((h) => (
-                      <th key={h} className="border border-[#e1dfdd] px-2 py-1.5 text-left">
+                      <th
+                        key={h}
+                        className={`border border-[#e1dfdd] px-2 py-1.5 text-left ${
+                          h === "Sc (rigor)"
+                            ? "bg-emerald-50"
+                            : h === "Throughput"
+                              ? "bg-slate-100"
+                              : ""
+                        }`}
+                      >
                         {h}
                       </th>
                     ))}
@@ -155,7 +198,7 @@ export function ComparisonPage() {
                 </thead>
                 <tbody>
                   {[...compareRows]
-                    .sort((a, b) => a.country.localeCompare(b.country))
+                    .sort((a, b) => getComposite(b) - getComposite(a))
                     .map((r) => (
                       <tr key={r.country} className="hover:bg-[#faf9f8]">
                         <td className="border border-[#e1dfdd] px-2 py-1 font-medium">
@@ -163,6 +206,12 @@ export function ComparisonPage() {
                         </td>
                         <td className="border border-[#e1dfdd] px-2 py-1">{r.region}</td>
                         <td className="border border-[#e1dfdd] px-2 py-1">{r.maturity}</td>
+                        <td className="border border-[#e1dfdd] bg-emerald-50/50 px-2 py-1 font-semibold text-emerald-900">
+                          {getComposite(r).toFixed(2)}
+                        </td>
+                        <td className="border border-[#e1dfdd] bg-slate-50 px-2 py-1 text-slate-700">
+                          {r.aiDevicesApproved}
+                        </td>
                         <td className="max-w-[140px] border border-[#e1dfdd] px-2 py-1">
                           {r.regulatoryBody}
                         </td>
@@ -171,9 +220,6 @@ export function ComparisonPage() {
                         </td>
                         <td className="max-w-[140px] border border-[#e1dfdd] px-2 py-1">
                           {r.aiRegulation}
-                        </td>
-                        <td className="border border-[#e1dfdd] px-2 py-1">
-                          {r.aiDevicesApproved}
                         </td>
                       </tr>
                     ))}
