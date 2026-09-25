@@ -1,6 +1,6 @@
 # Literature Review: AI for Healthcare Compliance and Regulations Across Countries
 
-**Project:** AI Clinic – Interactive Dashboard on AI Healthcare Compliance  
+**Project:** PFE — AI Healthcare Compliance Dashboard (aivancity PGE5)  
 **Supervisor:** Dr. Anuradha Kar  
 **Date:** March 2026
 
